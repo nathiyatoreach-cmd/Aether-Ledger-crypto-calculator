@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aether Ledger | AI Crypto Calculator</title>
+    <meta
+      name="description"
+      content="Standalone AI crypto calculator with market data, trade planning, DCA, portfolio tools, and a browser-side AI copilot."
+    />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-gold"></div>
+    <div class="ambient ambient-aqua"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand-lockup">
+          <div class="brand-mark">
+            <img src="./icon.svg" alt="Aether Ledger icon" />
+          </div>
+          <div>
+            <p class="eyebrow">Trader Edition</p>
+            <h1>Aether Ledger</h1>
+            <p class="brand-subtitle">AI Crypto Calculator</p>
+          </div>
+        </div>
+
+        <p class="sidebar-copy">
+          A standalone crypto planning cockpit for traders, DeFi users, and
+          screenshot-ready product demos.
+        </p>
+
+        <nav class="nav-list">
+          <a href="#dashboard">Dashboard</a>
+          <a href="#calculator">Calculator Hub</a>
+          <a href="#assistant">AI Assistant</a>
+          <a href="#portfolio">Portfolio Tools</a>
+          <a href="#settings">Settings</a>
+          <a href="#about">About</a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <button class="pill-button" data-action="toggle-demo">Demo Mode</button>
+          <button class="pill-button muted" data-action="toggle-focus">Focus Mode</button>
+
+          <div class="sidebar-card">
+            <div class="section-inline">
+              <p class="mini-label">Watchlist</p>
+              <span class="mini-badge" id="watchlistSource">Demo</span>
+            </div>
+            <div id="watchlistList" class="watchlist"></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="dashboard" class="panel hero-panel">
+          <div class="hero-grid">
+            <div class="hero-copy">
+              <div class="badge-row">
+                <span class="badge" id="demoBadge">Demo-ready</span>
+                <span class="badge" id="assistantBadge">AI demo</span>
+                <span class="badge" id="marketBadge">Market mock</span>
+              </div>
+
+              <h2>
+                Price the trade, pressure-test the exit, and hand the thesis to
+                an AI copilot.
+              </h2>
+              <p>
+                Aether Ledger combines live crypto pricing, fast P/L math,
+                risk planning, DCA analysis, allocation shaping, and AI-style
+                explanations inside one polished standalone app.
+              </p>
+
+              <div class="metric-grid" id="heroMetrics"></div>
+              <div class="preset-grid" id="presetGrid"></div>
+            </div>
+
+            <div class="hero-side">
+              <div class="chart-card">
+                <div class="section-inline">
+                  <div>
+                    <p class="mini-label">Scenario Projection</p>
+                    <h3>Trade ladder</h3>
+                  </div>
+                  <button class="ghost-button" data-action="save-trade">
+                    Save setup
+                  </button>
+                </div>
+                <div id="projectionChart" class="chart-box"></div>
+              </div>
+
+              <div class="two-up">
+                <div class="info-card">
+                  <p class="mini-label">AI reflection</p>
+                  <p id="assistantPreview" class="info-copy"></p>
+                </div>
+                <div class="info-card">
+                  <p class="mini-label">Market source</p>
+                  <p id="marketMessage" class="info-copy"></p>
+                  <div class="button-row compact">
+                    <button class="ghost-button" data-action="refresh-market">
+                      Retry feed
+                    </button>
+                    <button class="ghost-button" data-action="sync-price">
+                      Sync spot
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="two-panel">
+          <section class="panel">
+            <div class="section-inline">
+              <div>
+                <p class="mini-label">Market Ribbon</p>
+                <h3>Favorite assets</h3>
+              </div>
+              <button class="ghost-button" data-action="refresh-market">
+                Refresh
+              </button>
+            </div>
+            <div id="marketRibbon" class="market-ribbon"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-inline">
+              <div>
+                <p class="mini-label">Scenario Ladder</p>
+                <h3>Bear, base, and bull</h3>
+              </div>
+              <span class="mini-badge" id="marketUpdated">Waiting</span>
+            </div>
+            <div id="scenarioChart" class="bar-chart"></div>
+          </section>
+        </div>
+
+        <section id="calculator" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Calculator Hub</p>
+              <h2>Main trade calculator</h2>
+              <p>
+                Convert crypto to fiat, estimate profit after fees and slippage,
+                and keep leverage risk visible at every step.
+              </p>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" data-action="sync-price">
+                Pull live spot
+              </button>
+              <button class="primary-button" data-action="save-trade">
+                Save history
+              </button>
+            </div>
+          </div>
+
+          <div class="calculator-grid">
+            <div class="form-grid">
+              <label>
+                <span>Asset</span>
+                <select id="assetSelect"></select>
+              </label>
+              <label>
+                <span>Fiat</span>
+                <select id="fiatSelect"></select>
+              </label>
+              <label>
+                <span>Amount</span>
+                <input id="amountInput" type="number" step="0.01" />
+              </label>
+              <label>
+                <span>Quantity</span>
+                <input id="quantityInput" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>Buy price</span>
+                <input id="buyPriceInput" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>Current price</span>
+                <input id="currentPriceInput" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>Sell price</span>
+                <input id="sellPriceInput" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>Live spot</span>
+                <input id="liveSpotDisplay" type="text" readonly />
+              </label>
+
+              <div class="range-card">
+                <div class="section-inline">
+                  <span>Fees</span>
+                  <strong id="feesValue">0.35%</strong>
+                </div>
+                <input id="feesInput" type="range" min="0" max="2" step="0.01" />
+              </div>
+
+              <div class="range-card">
+                <div class="section-inline">
+                  <span>Slippage</span>
+                  <strong id="slippageValue">0.65%</strong>
+                </div>
+                <input id="slippageInput" type="range" min="0" max="3" step="0.05" />
+              </div>
+
+              <div class="range-card">
+                <div class="section-inline">
+                  <span>Leverage</span>
+                  <strong id="leverageValue">3x</strong>
+                </div>
+                <input id="leverageInput" type="range" min="1" max="20" step="1" />
+              </div>
+            </div>
+
+            <div class="metric-grid metrics-tight" id="tradeMetrics"></div>
+          </div>
+        </section>
+
+        <div class="advanced-grid">
+          <section class="panel">
+            <div class="section-inline">
+              <div>
+                <p class="mini-label">Risk to Reward</p>
+                <h3>Position planner</h3>
+              </div>
+            </div>
+            <div class="sub-grid">
+              <label><span>Entry</span><input id="riskEntryInput" type="number" /></label>
+              <label><span>Stop loss</span><input id="riskStopInput" type="number" /></label>
+              <label><span>Take profit</span><input id="riskTakeInput" type="number" /></label>
+              <label><span>Account size</span><input id="riskAccountInput" type="number" /></label>
+            </div>
+            <div class="range-card">
+              <div class="section-inline">
+                <span>Risk %</span>
+                <strong id="riskPercentValue">1.5%</strong>
+              </div>
+              <input id="riskPercentInput" type="range" min="0.25" max="5" step="0.25" />
+            </div>
+            <div class="mini-metrics" id="riskMetrics"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-inline">
+              <div>
+                <p class="mini-label">Take Profit</p>
+                <h3>Scale-out ladder</h3>
+              </div>
+            </div>
+            <div class="sub-grid">
+              <label><span>Position size</span><input id="tpSizeInput" type="number" /></label>
+              <label><span>Entry</span><input id="tpEntryInput" type="number" /></label>
+              <label><span>Target 1</span><input id="tp1Input" type="number" /></label>
+              <label><span>Target 2</span><input id="tp2Input" type="number" /></label>
+              <label class="wide"><span>Target 3</span><input id="tp3Input" type="number" /></label>
+            </div>
+            <div id="tpRows" class="list-grid"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-inline">
+              <div>
+                <p class="mini-label">Liquidation</p>
+                <h3>Leverage warning panel</h3>
+              </div>
+            </div>
+            <div class="segment-row">
+              <button class="segment active" data-liquidation-type="long">Long</button>
+              <button class="segment" data-liquidation-type="short">Short</button>
+            </div>
+            <div class="range-card">
+              <div class="section-inline">
+                <span>Maintenance margin</span>
+                <strong id="maintenanceValue">0.6%</strong>
+              </div>
+              <input id="maintenanceInput" type="range" min="0.3" max="5" step="0.1" />
+            </div>
+            <div class="warning-card" id="liquidationOutput"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-inline">
+              <div>
+                <p class="mini-label">Tax helper</p>
+                <h3>Rough estimate only</h3>
+              </div>
+            </div>
+            <div class="sub-grid">
+              <label><span>Estimated gains</span><input id="taxGainsInput" type="number" /></label>
+              <label><span>Holding months</span><input id="taxMonthsInput" type="number" /></label>
+            </div>
+            <div class="range-card">
+              <div class="section-inline">
+                <span>Estimated tax rate</span>
+                <strong id="taxRateValue">24%</strong>
+              </div>
+              <input id="taxRateInput" type="range" min="5" max="45" step="1" />
+            </div>
+            <div class="mini-metrics" id="taxMetrics"></div>
+            <p class="footnote">
+              This helper is informational only and not legal, financial, or tax advice.
+            </p>
+          </section>
+        </div>
+
+        <section id="assistant" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">AI Assistant</p>
+              <h2>Natural-language trade copilot</h2>
+              <p>
+                Parse setups from plain English, explain results, compare scenarios,
+                summarize portfolio posture, and generate risk notes.
+              </p>
+            </div>
+            <span class="mini-badge" id="assistantProviderBadge">Demo strategist</span>
+          </div>
+
+          <div class="assistant-grid">
+            <div class="assistant-controls">
+              <label>
+                <span>Prompt</span>
+                <textarea id="assistantPrompt"></textarea>
+              </label>
+              <div id="exampleChips" class="chip-row"></div>
+              <div class="button-row wrap">
+                <button class="primary-button" data-action="autofill">AI auto-fill helper</button>
+                <button class="ghost-button" data-assistant-task="explain">Explain results</button>
+                <button class="ghost-button" data-assistant-task="compare">Compare scenarios</button>
+                <button class="ghost-button" data-assistant-task="portfolio">Portfolio summary</button>
+                <button class="ghost-button" data-assistant-task="sentiment">Sentiment summary</button>
+                <button class="ghost-button" data-assistant-task="risk">Risk notes</button>
+              </div>
+            </div>
+
+            <div class="assistant-output-card">
+              <div class="section-inline">
+                <div>
+                  <p class="mini-label">Assistant Output</p>
+                  <h3 id="assistantMeta">Demo strategist</h3>
+                </div>
+                <span class="mini-badge" id="assistantModeBadge">demo</span>
+              </div>
+              <div id="assistantOutput" class="assistant-output"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="portfolio" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Portfolio Tools</p>
+              <h2>Allocation, DCA, yield, and journaling</h2>
+              <p>
+                Explore portfolio weight mixes, DCA growth, staking yield, saved
+                calculations, and a lightweight trade journal.
+              </p>
+            </div>
+            <div class="button-row">
+              <button class="ghost-button" data-action="save-snapshot">Save snapshot</button>
+              <button class="ghost-button" data-action="export-json">Export JSON</button>
+              <button class="ghost-button" data-action="export-csv">Export CSV</button>
+            </div>
+          </div>
+
+          <div class="portfolio-layout">
+            <div class="allocation-column">
+              <label>
+                <span>Portfolio value</span>
+                <input id="portfolioValueInput" type="number" />
+              </label>
+              <div id="allocationInputs" class="allocation-inputs"></div>
+              <p id="allocationTotal" class="footnote"></p>
+              <div id="snapshotList" class="list-grid"></div>
+            </div>
+
+            <div class="allocation-visuals">
+              <div class="donut-card">
+                <div id="allocationDonut" class="donut"></div>
+                <div id="allocationLegend" class="legend"></div>
+              </div>
+              <div class="list-grid" id="allocationAmounts"></div>
+            </div>
+          </div>
+
+          <div class="portfolio-subsections">
+            <section class="sub-panel">
+              <div class="section-inline">
+                <div>
+                  <p class="mini-label">DCA Growth</p>
+                  <h3>Accumulation model</h3>
+                </div>
+              </div>
+              <div class="sub-grid">
+                <label><span>Recurring amount</span><input id="dcaRecurringInput" type="number" /></label>
+                <label><span>Starting price</span><input id="dcaPriceInput" type="number" /></label>
+                <label>
+                  <span>Frequency</span>
+                  <select id="dcaFrequencyInput">
+                    <option value="weekly">Weekly</option>
+                    <option value="biweekly">Bi-weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </label>
+                <label><span>Periods</span><input id="dcaPeriodsInput" type="number" /></label>
+              </div>
+              <div class="range-card">
+                <div class="section-inline">
+                  <span>Expected annual growth</span>
+                  <strong id="dcaGrowthValue">18%</strong>
+                </div>
+                <input id="dcaGrowthInput" type="range" min="-20" max="80" step="1" />
+              </div>
+              <div id="dcaChart" class="chart-box"></div>
+              <div class="mini-metrics" id="dcaMetrics"></div>
+            </section>
+
+            <section class="sub-panel">
+              <div class="section-inline">
+                <div>
+                  <p class="mini-label">Staking</p>
+                  <h3>Yield estimator</h3>
+                </div>
+              </div>
+              <div class="sub-grid">
+                <label><span>Principal</span><input id="stakingPrincipalInput" type="number" /></label>
+                <label><span>Duration months</span><input id="stakingMonthsInput" type="number" /></label>
+                <label>
+                  <span>Compounding</span>
+                  <select id="stakingCompoundingInput">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </label>
+                <label><span>APY</span><input id="stakingApyInput" type="number" /></label>
+              </div>
+              <div class="mini-metrics" id="stakingMetrics"></div>
+            </section>
+          </div>
+
+          <div class="portfolio-subsections">
+            <section class="sub-panel">
+              <div class="section-inline">
+                <div>
+                  <p class="mini-label">Saved History</p>
+                  <h3>Trade archive</h3>
+                </div>
+              </div>
+              <div id="historyList" class="list-grid"></div>
+            </section>
+
+            <section class="sub-panel">
+              <div class="section-inline">
+                <div>
+                  <p class="mini-label">Trade Journal</p>
+                  <h3>Quick reflection log</h3>
+                </div>
+              </div>
+              <div class="journal-form">
+                <label><span>Headline</span><input id="journalHeadlineInput" type="text" /></label>
+                <label><span>Reflection</span><textarea id="journalBodyInput"></textarea></label>
+                <button class="primary-button" data-action="save-journal">Save journal note</button>
+              </div>
+              <div id="journalList" class="list-grid"></div>
+            </section>
+          </div>
+        </section>
+
+        <section id="settings" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Settings</p>
+              <h2>Flexible AI provider routing</h2>
+              <p>
+                Keys are stored in browser localStorage only for local convenience.
+                Move provider calls behind a backend proxy for production.
+              </p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <div class="settings-form">
+              <label>
+                <span>Provider adapter</span>
+                <select id="providerTypeInput">
+                  <option value="openai">OpenAI-compatible</option>
+                  <option value="groq">Groq-compatible</option>
+                  <option value="together">Together-compatible</option>
+                  <option value="anthropic">Anthropic wrapper</option>
+                  <option value="gemini">Gemini wrapper</option>
+                  <option value="custom-openai">Custom OpenAI-compatible</option>
+                </select>
+              </label>
+              <label><span>Provider name</span><input id="providerNameInput" type="text" /></label>
+              <label><span>Model</span><input id="providerModelInput" type="text" /></label>
+              <label><span>API key</span><input id="providerKeyInput" type="password" /></label>
+              <label><span>Base URL</span><input id="providerBaseUrlInput" type="text" /></label>
+              <div class="range-card">
+                <div class="section-inline">
+                  <span>Temperature</span>
+                  <strong id="temperatureValue">0.4</strong>
+                </div>
+                <input id="temperatureInput" type="range" min="0" max="1.5" step="0.1" />
+              </div>
+            </div>
+
+            <div class="settings-notes">
+              <div class="warning-card">
+                <h3>Local key warning</h3>
+                <p>
+                  Browser-stored keys are for local demos only. In production,
+                  route AI requests through a secure server-side proxy.
+                </p>
+              </div>
+              <div class="info-card">
+                <h3>Provider notes</h3>
+                <p>
+                  OpenAI, Groq, Together, and custom endpoints share the same
+                  chat-completions abstraction. Anthropic and Gemini use their own wrappers.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">About</p>
+              <h2>Marketplace-ready product notes</h2>
+            </div>
+          </div>
+
+          <div class="about-grid">
+            <div class="info-card">
+              <h3>Use-case focus</h3>
+              <p>
+                Best for active traders, advanced beginners, and DeFi users who
+                want fast conversion math, risk visibility, and structured AI-style summaries.
+              </p>
+            </div>
+            <div class="info-card">
+              <h3>Disclaimer</h3>
+              <p>
+                This software is informational only and does not replace financial,
+                legal, tax, or exchange-specific advice.
+              </p>
+            </div>
+            <div class="info-card">
+              <h3>Architecture note</h3>
+              <p>
+                The AI layer is intentionally abstracted so it can be moved to a
+                backend proxy later without redesigning the interface.
+              </p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="mobile-nav">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#calculator">Calculator</a>
+      <a href="#assistant">AI</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#settings">Settings</a>
+    </nav>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
